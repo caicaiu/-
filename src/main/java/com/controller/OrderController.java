@@ -54,7 +54,6 @@ public class OrderController {
         }
         //查询订单详情
         LambdaQueryWrapper<OrderDetail> queryWrapper1 = new LambdaQueryWrapper<>();
-        queryWrapper1.eq(OrderDetail::getOrderId,orderId);
         //查询用户id
         orderDetailService.page(pageinfo,queryWrapper1);
         //返回分页数据

@@ -61,7 +61,7 @@ public class CategoryController {
     }
 
     /**
-     * 修改文件
+     * 修改菜品
      */
     @PutMapping
     public R<String> put(@RequestBody Category category){

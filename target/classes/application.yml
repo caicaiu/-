@@ -16,6 +16,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 100MB
+  redis:
+    host: 192.168.200.130
+    port: 6379
+    database: 0
+
 mybatis-plus:
   configuration:
     #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射

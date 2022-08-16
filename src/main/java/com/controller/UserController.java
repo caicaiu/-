@@ -8,11 +8,13 @@ import com.utils.ValidateCodeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/user")
@@ -21,6 +23,10 @@ public class UserController {
 
     @Autowired
     UserService userService;
+
+    //注入Redis对象
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @PostMapping("/sendMsg")
     public R<String> sendMsg(@RequestBody User user, HttpSession session){
@@ -36,7 +42,9 @@ public class UserController {
             /*SMSUtils.sendMessage("你的短信验证码为","",phone,code);*/
 
             //将验证码存到session中
-            session.setAttribute(phone,code);
+            //session.setAttribute(phone,code);
+            //使用redis存储验证码
+            redisTemplate.opsForValue().set(phone,code,5, TimeUnit.MINUTES);
             return R.success("发送验证码成功");
 
         }
@@ -61,7 +69,9 @@ public class UserController {
         String code = map.get("code");
 
         //从session中取出code
-        Object phoneCode = session.getAttribute(phone).toString();
+        //Object phoneCode = session.getAttribute(phone).toString();
+        //从redis中获取code
+        Object phoneCode = redisTemplate.opsForValue().get(phone);
 
         //判断是否想等
         if(code!=null&&code.equals(phoneCode)){
@@ -81,6 +91,8 @@ public class UserController {
             session.setAttribute("user",user.getId());
 
             //成功返回,为什么返回用户信息，因为在返回给浏览器，让他保存用户信息
+            //登录成功后删除验证码
+            redisTemplate.delete(phone);
             return R.success(user);
         }
 
