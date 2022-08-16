@@ -7,14 +7,12 @@ import com.dto.SetmealDto;
 import com.emtity.Category;
 import com.emtity.Setmeal;
 import com.service.CategoryService;
-import com.service.SetmealDishService;
 import com.service.SetmealService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,16 +23,14 @@ public class SetmealController {
     @Autowired
     private SetmealService setmealService;
 
-    @Autowired
-    private SetmealDishService setmealDishService;
 
     @Autowired
     private CategoryService categoryService;
 
     /**
      * 保存套餐
-     * @param setmealDto
-     * @return
+     * @param setmealDto 获取套餐信息
+     * @return 返回字符串，提示成功添加
      */
     @PostMapping
     public R<String>  save(@RequestBody SetmealDto setmealDto){

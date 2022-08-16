@@ -3,6 +3,7 @@ package com.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.common.BaseContext;
+import com.common.CustomException;
 import com.common.R;
 import com.emtity.AddressBook;
 import com.service.AddressBookService;
@@ -37,7 +38,7 @@ public class AddressBookController {
 
     /**
      * 查询用户的所有地址
-     * @return
+     * @return 返回默认地址信息
      */
     @GetMapping("/list")
     public R<List<AddressBook>> list(){
@@ -57,8 +58,8 @@ public class AddressBookController {
 
     /**
      * 设置默认地址
-     * @param addressBook
-     * @return
+     * @param addressBook  获取用户的地址
+     * @return  返回默认地址
      */
     @PutMapping("/default")
     public R<AddressBook> putAddressBook(@RequestBody AddressBook addressBook){
@@ -78,6 +79,21 @@ public class AddressBookController {
         addressBookService.updateById(addressBook);
 
         return R.success(addressBook);
+    }
 
+    @GetMapping("/default")
+    public R<AddressBook> getDefault(){
+        //获取用户id
+        Long id = BaseContext.getId();
+        //根据用户id查询地址，地址为默认的
+        LambdaQueryWrapper<AddressBook> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AddressBook::getUserId,id);
+        queryWrapper.eq(AddressBook::getIsDefault,"1");
+
+        AddressBook addressBook = addressBookService.getOne(queryWrapper);
+        if(addressBook==null){
+            throw  new CustomException("该用户没有用户地址");
+        }
+        return R.success(addressBook);
     }
 }
